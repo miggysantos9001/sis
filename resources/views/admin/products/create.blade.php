@@ -7,74 +7,52 @@
 <div style="margin-bottom:20px;"></div>
 {!! Form::open(['method'=>'POST','action'=>'ProductController@store','novalidate' => 'novalidate','files' => 'true']) !!}
 <div class="row">
-    <div class="col-md-12">
+    <div class="col-md-8">
         <div class="block block-themed">
             <div class="block-header bg-primary">
                 <h3 class="block-title">{{ __('msg.Create Product Form') }}</h3>
             </div>
             <div class="block-content">
                 <div class="row">
-                    <div class="col-md-6">
+                    <div class="col-md-12">
                         <div class="form-group">
                             <label>{{ __('msg.Product Barcode') }}</label>
                             {!! Form::text('barcode',null,['class'=>'form-control']) !!}
                         </div>
-                    </div>
-                    <div class="col-md-6">
                         <div class="form-group">
                             <label>{{ __('msg.Select Branch') }}</label>
                             {!! Form::select('branch_id',$branches,null,['class'=>'form-control js-select2','placeholder'=>'PLEASE SELECT']) !!}
                         </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-4">
                         <div class="form-group">
                             <label>{{ __('msg.Select Category') }}</label>
                             {!! Form::select('category_id',$categories,null,['class'=>'form-control js-select2','placeholder'=>'PLEASE SELECT']) !!}
                         </div>
-                    </div>
-                    <div class="col-md-4">
                         <div class="form-group">
                             <label>{{ __('msg.Product Description') }}</label>
                             {!! Form::text('description',null,['class'=>'form-control']) !!}
                         </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label>{{ __('msg.Chinese').' '.__('msg.Product Description') }}</label>
-                            {!! Form::text('cdescription',null,['class'=>'form-control']) !!}
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-4">
                         <div class="form-group">
                             <label>{{ __('msg.Store Price') }}</label>
                             {!! Form::text('stp','0.00',['class'=>'form-control']) !!}
                         </div>
-                    </div>
-                    <div class="col-md-4">
                         <div class="form-group">
                             <label>{{ __('msg.SRP') }}</label>
                             {!! Form::text('srp','0.00',['class'=>'form-control']) !!}
                         </div>
-                    </div>
-                    <div class="col-md-4">
                         <div class="form-group">
                             <label>{{ __('msg.Wholesale Price') }}</label>
                             {!! Form::text('wsp','0.00',['class'=>'form-control']) !!}
                         </div>
                     </div>
                 </div>
-                <div class="row">
+                {{-- <div class="row">
                     <div class="col-md-6">
                         <div class="form-group">
                             <label>{{ __('msg.Upload Images') }}</label>
                             <input type="file" class="form-control" name="images[]" placeholder="address" multiple>
                         </div>
                     </div>
-                </div>
+                </div> --}}
             </div>
         </div>
     </div>

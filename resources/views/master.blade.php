@@ -144,6 +144,9 @@
                                         <a href="{{ action('CategoryController@index') }}">
                                             {{ __('msg.Categories') }}
                                         </a>
+                                        <a href="{{ action('CustomerController@index') }}">
+                                            Customers
+                                        </a>
                                         <a href="{{ action('ProductController@index') }}">
                                             {{ __('msg.Products') }}
                                         </a>

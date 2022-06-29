@@ -39,7 +39,11 @@ Route::get('/product/delete-entry/{id}','ProductController@delete_product_image'
 Route::post('/product/new-price/{id}','ProductController@new_price');
 Route::resource('/products','ProductController');
 
+Route::get('/new-item/delete-item/{id}','NewItemController@delete_item')->name('new-item.delete-item');
+Route::post('/new-item/update-item/{id}','NewItemController@update_item');
 Route::resource('/new-items','NewItemController');
+Route::get('/new-items/delete/{id}','NewItemController@delete')->name('new-items.delete');
+
 Route::resource('/settings','SettingController');
 Route::resource('/suppliers','SupplierController');
 
@@ -60,5 +64,7 @@ Route::post('/sales/daily-income','SalesController@post_daily_income');
 Route::get('/setup/delete/{id}','SetupController@delete');
 Route::get('lang/{lang}', ['as' => 'lang.switch', 'uses' => 'SetupController@switchLang']);
 Route::resource('/setups','SetupController');
+
+Route::resource('customers','CustomerController');
 
 
