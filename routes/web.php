@@ -68,6 +68,10 @@ Route::resource('/setups','SetupController');
 Route::resource('/customers','CustomerController');
 
 Route::get('/loadproducts','DistributionController@loadproducts');
+Route::get('/distribution/create-customer-order','DistributionController@create_customer_order')->name('distribution.create-order');
+Route::post('/distribution/add-to-cart/','DistributionController@addtoCart')->name('distribution.cart');
+Route::post('/distribution/create-customer-order','DistributionController@store_customer_order');
+
 Route::resource('/distributions','DistributionController');
 
 

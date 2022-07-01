@@ -3,12 +3,12 @@
 @section('content')
 <h2 class="content-heading">Distribution Order - Create Order</h2>
 @include('alert')
-<a href="{{ route('new-items.index') }}" class="btn btn-back"><i class="fa fa-home"></i> {{ __('msg.Back to Main') }}</a>
+<a href="{{ route('distributions.create') }}" class="btn btn-back"><i class="fa fa-home"></i> Back to Build Order Products</a>
 <a href="#add" data-toggle="modal" class="btn btn-success"><i class="fa fa-shopping-cart"></i> View Cart</a>
 <div style="margin-bottom:20px;"></div>
 {!! Form::open(['method'=>'POST','action'=>'DistributionController@addtoCart']) !!}
 <div class="row">
-    {{-- <div class="col-md-4">
+    <div class="col-md-4">
         <div class="block block-themed">
             <div class="block-header bg-primary">
                 <h3 class="block-title">Create Order</h3>
@@ -40,8 +40,8 @@
                 </div>
             </div>
         </div>
-    </div> --}}
-    <div class="col-md-12">
+    </div>
+    <div class="col-md-8">
         <div class="block block-themed">
             <div class="block-header bg-success">
                 <h3 class="block-title">Build Order Products</h3>
@@ -75,10 +75,10 @@
                     </div>
                 </div>
                 <div class="row mb-3">
-                    <div class="col-md-4">
+                    <div class="col-md-12">
                         <button type="submit" class="btn btn-success"><i class="fa fa-cart-plus"></i> Add to Cart</button>
                         @if(session('cart'))
-                        <a href="{{ route('distribution.create-order') }}" class="btn btn-primary" style="text-transform: none !important;"><i class="fa fa-plus-circle"></i> Create Customer Order</a>
+                        <a href="#" class="btn btn-primary" style="text-transform: none !important;"><i class="fa fa-plus-circle"></i> Create Customer Order</a>
                         @endif
                     </div>
                 </div>
