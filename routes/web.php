@@ -65,6 +65,9 @@ Route::get('/setup/delete/{id}','SetupController@delete');
 Route::get('lang/{lang}', ['as' => 'lang.switch', 'uses' => 'SetupController@switchLang']);
 Route::resource('/setups','SetupController');
 
-Route::resource('customers','CustomerController');
+Route::resource('/customers','CustomerController');
+
+Route::get('/loadproducts','DistributionController@loadproducts');
+Route::resource('/distributions','DistributionController');
 
 
