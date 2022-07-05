@@ -16,10 +16,6 @@
                 <div class="row">
                     <div class="col-md-12">
                         <div class="form-group">
-                            <label>{{ __('msg.Product Barcode') }}</label>
-                            {!! Form::text('barcode',null,['class'=>'form-control']) !!}
-                        </div>
-                        <div class="form-group">
                             <label>{{ __('msg.Select Branch') }}</label>
                             {!! Form::select('branch_id',$branches,null,['class'=>'form-control js-select2','placeholder'=>'PLEASE SELECT']) !!}
                         </div>
@@ -32,27 +28,27 @@
                             {!! Form::text('description',null,['class'=>'form-control']) !!}
                         </div>
                         <div class="form-group">
-                            <label>{{ __('msg.Store Price') }}</label>
+                            <label>Quantity</label>
+                            {!! Form::text('qty','0.00',['class'=>'form-control']) !!}
+                        </div>
+                        <div class="form-group">
+                            <label>Cost</label>
                             {!! Form::text('stp','0.00',['class'=>'form-control']) !!}
                         </div>
                         <div class="form-group">
-                            <label>{{ __('msg.SRP') }}</label>
+                            <label>Distribution Price</label>
+                            {!! Form::text('wsp','0.00',['class'=>'form-control']) !!}
+                        </div>
+                        <div class="form-group">
+                            <label>Retail Price / Box</label>
                             {!! Form::text('srp','0.00',['class'=>'form-control']) !!}
                         </div>
                         <div class="form-group">
-                            <label>{{ __('msg.Wholesale Price') }}</label>
-                            {!! Form::text('wsp','0.00',['class'=>'form-control']) !!}
+                            <label>Retail Price / Piece</label>
+                            {!! Form::text('srpp','0.00',['class'=>'form-control']) !!}
                         </div>
                     </div>
                 </div>
-                {{-- <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label>{{ __('msg.Upload Images') }}</label>
-                            <input type="file" class="form-control" name="images[]" placeholder="address" multiple>
-                        </div>
-                    </div>
-                </div> --}}
             </div>
         </div>
     </div>

@@ -100,11 +100,14 @@
                             </li>
                             @if(Auth::user()->cashier_id == NULL)
                             <li>
-                                <a class="nav-submenu" data-toggle="nav-submenu" href="#"><i class="fa fa-shopping-cart"></i><span class="sidebar-mini-hide"> {{ __('msg.Products') }}</span></a>
+                                <a class="nav-submenu" data-toggle="nav-submenu" href="#"><i class="fa fa-handshake-o"></i><span class="sidebar-mini-hide"> Transactions</span></a>
                                 <ul>
                                     <li class="">
                                         <a href="{{ action('NewItemController@index') }}">
                                             {{ __('msg.Purchase Product') }}
+                                        </a>
+                                        <a href="{{ action('DistributionController@index') }}">
+                                            Distribution Order
                                         </a>
                                     </li>
                                 </ul>
@@ -156,6 +159,9 @@
                                         <a href="{{ action('SupplierController@index') }}">
                                             {{ __('msg.Suppliers') }}
                                         </a>
+                                        <a href="{{ action('UnitMeasureController@index') }}">
+                                            Unit of Measures
+                                        </a>
                                     </li>
                                 </ul>
                             </li>
@@ -164,7 +170,7 @@
                                 </a>
                             </li>
                             @endif
-                            <li>
+                            {{-- <li>
                                 <a class="nav-submenu" data-toggle="nav-submenu" href="#"><i class="fa fa-flag"></i>{{ Config::get('languages')[App::getLocale()]['display'] }}</a>
                                 <ul>
                                     <li class="">
@@ -175,7 +181,7 @@
                                         @endforeach
                                     </li>
                                 </ul>
-                            </li>
+                            </li> --}}
                             @if(Auth::user()->cashier_id == NULL)
                             <li>
                                 <a href="{{ action('InventoryController@view_inventory') }}"><i class="fa fa-clipboard"></i><span class="sidebar-mini-hide"> {{ __('msg.Inventory') }}

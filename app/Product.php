@@ -16,6 +16,10 @@ class Product extends Model
         return $this->belongsTo('App\Category','category_id','id');
     }
 
+    public function unit(){
+        return $this->belongsTo('App\Unit','uom_id','id');
+    }
+
     public function pricings(){
         return $this->hasMany('App\Product_pricing', 'product_id', 'id')->orderBy('id','DESC');
     }

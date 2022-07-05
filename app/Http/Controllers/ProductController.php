@@ -32,13 +32,17 @@ class ProductController extends Controller
             $data = Product::latest()->get();
             return Datatables::of($data)
             ->editColumn('category_id', function($data){
-                $bn = $data->category->name ."<br><small>".$data->category->cname."</small>";
+                $bn = $data->category->name;
                 return $bn;
             })
 
             ->editColumn('description', function($data){
                 $bn = $data->description ."<br><small>".$data->cdescription."</small>";
                 return $bn;
+            })
+
+            ->editColumn('uom_id', function($data){
+                return $data->unit->name;
             })
 
             ->addColumn('img', function($data){
@@ -80,24 +84,23 @@ class ProductController extends Controller
 
     public function store(){
         $validator = Validator::make(Request::all(), [
-            'barcode'                       =>  'required|unique:products',
             'category_id'                   =>  'required',
             'branch_id'                     =>  'required',
             'description'                   =>  'required|unique:products',
             'stp'                           =>  'required|numeric',
             'srp'                           =>  'required|numeric',
             'wsp'                           =>  'required|numeric',
-            'images'                        =>  "required|array|min:1",
+            'srpp'                          =>  'required|numeric',
         ],
         [
-            'barcode.required'              =>  'Barcode # Required',
             'category_id.required'          =>  'Please Select Category',
             'branch_id.required'            =>  'Please Select Branch',
             'description.required'          =>  'Description Required',
-            'stp.required'                  =>  'Original Price Required',
-            'srp.required'                  =>  'SRP Required',
-            'wsp.required'                  =>  'Wholesale Price Required',
-            'images.required'               =>  'Upload Product Images',
+            'stp.required'                  =>  'Cost Required',
+            'wsp.required'                  =>  'Distribution Price Required',
+            'srp.required'                  =>  'Retail Price / Box Required',
+            'srpp.required'                 =>  'Retail Price / Piece Required',
+
         ]);
 
         if ($validator->fails()) {
@@ -106,13 +109,7 @@ class ProductController extends Controller
                 ->withInput();
         }
 
-        $product_id = Product::create([
-                'barcode'           =>      Request::get('barcode'),
-                //'branch_id'         =>      Request::get('branch_id'),
-                'category_id'       =>      Request::get('category_id'),
-                'description'       =>      Request::get('description'),
-                'cdescription'      =>      Request::get('cdescription'),
-        ])->id;
+        $product_id = Product::create(Request::except('branch_id','stp','srp','srpp','wsp'))->id;
 
         Product_pricing::create([
             'product_id'            =>      $product_id,
@@ -120,21 +117,8 @@ class ProductController extends Controller
             'stp'                   =>      Request::get('stp'),
             'srp'                   =>      Request::get('srp'),
             'wsp'                   =>      Request::get('wsp'),
+            'srpp'                  =>      Request::get('srpp'),
         ]);
-
-        $images=array();
-        if($files = Request::file('images')){
-            foreach($files as $file){
-                $extension = $file->getClientOriginalExtension();
-                $fileName = Str::random(40).'.'.$file->extension();
-                $file->move(public_path().'/images',$fileName);
-
-                Product_image::create([
-                    'product_id'        =>      $product_id,
-                    'name'              =>      $fileName,
-                ]);
-            }
-        }
 
         toastr()->success('Product Created Successfully', config('global.system_name'));
         return redirect()->back();
@@ -149,13 +133,13 @@ class ProductController extends Controller
     public function update($id){
         $product = Product::find($id);
         $validator = Validator::make(Request::all(), [
-            'barcode'                       =>  "required|unique:products,barcode,$product->id,id",
             'category_id'                   =>  'required',
+            'qty'                           =>  'required',
             'description'                   =>  "required|unique:products,description,$product->id,id",
         ],
         [
-            'barcode.required'              =>  'Barcode # Required',
             'category_id.required'          =>  'Please Select Category',
+            'qty.required'                  =>  'Quantity Required',
             'description.required'          =>  'Description Required',
         ]);
 
@@ -165,28 +149,7 @@ class ProductController extends Controller
                 ->withInput();
         }
 
-        $product->update([
-                'barcode'           =>      Request::get('barcode'),
-                'category_id'       =>      Request::get('category_id'),
-                'description'       =>      Request::get('description'),
-                'cdescription'      =>      Request::get('cdescription'),
-        ]);
-
-        $images=array();
-        if(Request::has('images')){
-            if($files = Request::file('images')){
-                foreach($files as $file){
-                    $extension = $file->getClientOriginalExtension();
-                    $fileName = Str::random(40).'.'.$file->extension();
-                    $file->move(public_path().'/images',$fileName);
-
-                    Product_image::create([
-                        'product_id'        =>      $product->id,
-                        'name'              =>      $fileName,
-                    ]);
-                }
-            }
-        }
+        $product->update(Request::all());
 
         toastr()->success('Product Updated Successfully', config('global.system_name'));
         return redirect()->back();
@@ -206,12 +169,14 @@ class ProductController extends Controller
             'stp'                           =>  'required|numeric',
             'srp'                           =>  'required|numeric',
             'wsp'                           =>  'required|numeric',
+            'srpp'                          =>  'required|numeric',
         ],
         [
             'branch_id.required'            =>  'Please Select Branch',
-            'stp.required'                  =>  'Original Price Required',
-            'srp.required'                  =>  'SRP Required',
-            'wsp.required'                  =>  'Wholesale Price Required',
+            'stp.required'                  =>  'Cost Required',
+            'srp.required'                  =>  'Retail Price / Box Required',
+            'wsp.required'                  =>  'Distribution Price Required',
+            'srpp.required'                 =>  'Retail Price / Piece Required',
         ]);
 
         if ($validator->fails()) {
@@ -226,6 +191,7 @@ class ProductController extends Controller
             'stp'                   =>      Request::get('stp'),
             'srp'                   =>      Request::get('srp'),
             'wsp'                   =>      Request::get('wsp'),
+            'srpp'                  =>      Request::get('srpp'),
         ]);
 
         toastr()->success('Product Price Created Successfully', config('global.system_name'));

@@ -12,7 +12,7 @@
         ->first();
 ?>
 <div class="row">
-    <div class="col-md-12">
+    <div class="col-md-8">
         <div class="block block-themed">
             <div class="block-header bg-primary">
                 <h3 class="block-title">{{ __('msg.Update Product Form') }}</h3>
@@ -21,45 +21,16 @@
                 <div class="row">
                     <div class="col-md-12">
                         <div class="form-group">
-                            <label>{{ __('msg.Product Barcode') }}</label>
-                            {!! Form::text('barcode',null,['class'=>'form-control']) !!}
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-4">
-                        <div class="form-group">
                             <label>{{ __('msg.Select Category') }}</label>
                             {!! Form::select('category_id',$categories,null,['class'=>'form-control js-select2','placeholder'=>'PLEASE SELECT']) !!}
                         </div>
-                    </div>
-                    <div class="col-md-4">
                         <div class="form-group">
                             <label>{{ __('msg.Product Description') }}</label>
                             {!! Form::text('description',null,['class'=>'form-control']) !!}
                         </div>
-                    </div>
-                    <div class="col-md-4">
                         <div class="form-group">
-                            <label>{{ __('msg.Chinese').' '.__('msg.Product Description') }}</label>
-                            {!! Form::text('cdescription',null,['class'=>'form-control']) !!}
-                        </div>
-                    </div>
-                </div>
-                <hr>
-                <div class="row">
-                    <div class="col-md-12">
-                        @foreach($product->images as $pimages)
-                        <img class="img-avatar img-avatar-thumb" src="<?php echo asset('public/images/'.$pimages->name) ?>" alt="">
-                        @endforeach
-                    </div>
-                </div>
-                <hr>
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label>{{ __('msg.Upload Images') }}</label>
-                            <input type="file" class="form-control" name="images[]" placeholder="address" multiple>
+                            <label>Quantity</label>
+                            {!! Form::text('qty',null,['class'=>'form-control']) !!}
                         </div>
                     </div>
                 </div>

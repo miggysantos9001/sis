@@ -15,10 +15,10 @@
                 <table class="table table-bordered table-striped table-vcenter data-table" style="text-transform: uppercase;">
                     <thead>
                         <tr>
-                            <th class="text-center">{{ __('msg.Image') }}</th>
-                            <!-- <th class="text-center">{{ __('msg.Barcode Number') }}</th> -->
                             <th class="text-center">{{ __('msg.Category') }}</th>
                             <th class="text-center">{{ __('msg.Description') }}</th>
+                            <th class="text-center">UoM</th>
+                            <th class="text-center">Quantity</th>
                             <th class="text-center" width="50">{{ __('msg.Action') }}</th>
                         </tr>
                     </thead>
@@ -37,10 +37,10 @@
         serverSide: true,
         ajax: "{{ action('ProductController@index') }}",
         columns: [
-            {data: 'img', name: 'img'},
-            // {data: 'barcode', name: 'barcode'},
             {data: 'category_id', name: 'category_id'},
             {data: 'description', name: 'description'},
+            {data: 'uom_id', name: 'uom_id'},
+            {data: 'qty', name: 'qty'},
             {data: 'action', name: 'action', orderable: false, searchable: false},
         ]
     });

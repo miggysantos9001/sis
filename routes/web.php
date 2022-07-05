@@ -68,10 +68,20 @@ Route::resource('/setups','SetupController');
 Route::resource('/customers','CustomerController');
 
 Route::get('/loadproducts','DistributionController@loadproducts');
+Route::get('/distribution/remove-to-cart/{id}','DistributionController@removetoCart')->name('distribution.remove-to-cart');
+Route::get('/distribution/delete-entry/{id}','DistributionController@delete_entry')->name('distribution.delete-item');
+Route::get('/distribution/delete/{id}','DistributionController@delete')->name('distribution.delete');
+Route::get('/distribution/set-paid/{id}','DistributionController@set_paid')->name('distribution.set-paid');
+Route::get('/distribution/print/{id}','DistributionController@print')->name('distribution.print');
 Route::get('/distribution/create-customer-order','DistributionController@create_customer_order')->name('distribution.create-order');
+
 Route::post('/distribution/add-to-cart/','DistributionController@addtoCart')->name('distribution.cart');
 Route::post('/distribution/create-customer-order','DistributionController@store_customer_order');
+Route::post('/distribution/update-entry/{id}','DistributionController@update_entry');
+Route::post('/distribution/set-paid/{id}','DistributionController@post_set_paid');
 
 Route::resource('/distributions','DistributionController');
+
+Route::resource('/unit-measures','UnitMeasureController');
 
 

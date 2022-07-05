@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Customer;
+use App\Distribution;
+use App\Distribution_item;
+use App\Distribution_payment;
 use App\Product;
 use App\Purchase_order_item;
 use Excel;
@@ -24,14 +27,22 @@ class DistributionController extends Controller
         $this->middleware('auth');
     }
 
+    public function index(){
+        $distributions = Distribution::with('customer','distribution_items')
+            ->orderBy('date','DESC')
+            ->get();
+        
+        return view('admin.distributions.index',compact('distributions'));
+    }
+
     public function loadproducts(){
         $id = Request::get('combobox3');
-        $prod = Purchase_order_item::with('product')->where('product_id',$id)->orderBy('date')->get();    
+        $prod = Purchase_order_item::with('product','product.pricing')->where('product_id',$id)->orderBy('date')->get();    
         return $prod;
     }
 
     public function create(){
-        //return Session::forget('cart');
+        //return Session::get('cart');
         $customers = Customer::orderBy('company_name')->get()->pluck('company_name','id');
         $products = Product::orderBy('description')->get()->pluck('description','id');
         return view('admin.distributions.create',compact('customers','products'));
@@ -41,20 +52,31 @@ class DistributionController extends Controller
         $cart = Session::get('cart', []);
         foreach(Request::get('products') as $key => $value){
             if(!empty($value['purchase_order_item_id'])){
-                $product = Purchase_order_item::where('id',$value['purchase_order_item_id'])->first();
+                $product = Purchase_order_item::with('product','product.pricing')->where('id',$value['purchase_order_item_id'])->first();
                 $cart[$value['purchase_order_item_id']] = [
                     "purchase_order_item_id"    =>  $value['purchase_order_item_id'],
                     "product_id"                =>  $product->product_id,
+                    "product_name"              =>  $product->product->description,
+                    "uom_id"                    =>  $product->product->unit->name,
                     "lot_number"                =>  $product->lot_number,
                     "expiry_date"               =>  $product->expiry_date,
                     "po_qty"                    =>  $product->qty,
                     "qty"                       =>  $value['qty'],
+                    "amount"                    =>  $product->product->pricing->wsp,
                 ];
             }
         }
             
         Session::put('cart', $cart);
         toastr()->success('Branch Created Successfully', config('global.system_name'));
+        return redirect()->back();
+    }
+
+    public function removetoCart($id){
+        $cart = Session::get('cart');
+        unset($cart[$id]);
+        Session::put('cart', $cart);
+        toastr()->success('Product Removed to Cart Successfully', config('global.system_name'));
         return redirect()->back();
     }
 
@@ -65,6 +87,131 @@ class DistributionController extends Controller
     }
 
     public function store_customer_order(){
+        $validator = Validator::make(Request::all(), [
+            'date'                          =>  'required',
+            'reference_number'              =>  'required|unique:distributions',
+            'terms'                         =>  'required',
+            'customer_id'                   =>  'required',
+            'representative'                =>  'required',
+        ],
+        [
+            'date.required'                 =>  'Date Required',
+            'reference_number.required'     =>  'Reference Number Required',
+            'terms.required'                =>  'Please Select Terms',
+            'customer_id.required'          =>  'Please Select Customer',
+            'representative.required'       =>  'Representative Required',
+        ]);
 
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        $distribution_id = Distribution::create(Request::except('purchase_order_item_id','qty'))->id;
+        foreach(Request::get('purchase_order_item_id') as $key => $value){
+            Distribution_item::create([
+                'date'                      =>          Request::get('date'),
+                'distribution_id'           =>          $distribution_id,
+                'purchase_order_item_id'    =>          $value,
+                'qty'                       =>          Request::get('qty')[$key],
+            ]);
+        }
+
+        toastr()->success('Distribution Order Created Succesfully', config('global.system_name'));
+        return redirect()->route('distributions.index');
+        Session::forget('cart');
+    }
+
+    public function edit($id){
+        $distribution = Distribution::find($id);
+        $customers = Customer::orderBy('company_name')->get()->pluck('company_name','id');
+        return view('admin.distributions.edit',compact('customers','distribution'));
+    }
+
+    public function update($id){
+        $distribution = Distribution::find($id);
+        $distribution->update(Request::all());
+        toastr()->success('Distribution Order Updated Succesfully', config('global.system_name'));
+        return redirect()->back();
+    }
+
+    public function delete($id){
+        $distribution = Distribution::find($id);
+        if($distribution->distribution_items->count() > 0){
+            $distribution->distribution_items()->delete();
+        }
+        $distribution->delete();
+        toastr()->success('Distribution Order Deleted Succesfully', config('global.system_name'));
+        return redirect()->back();
+    }
+
+    public function update_entry($id){
+        $item = Distribution_item::find($id);
+        $item->update([
+            'qty'       =>      Request::get('qty'),
+        ]);
+
+        toastr()->success('Distribution Order Item Updated Succesfully', config('global.system_name'));
+        return redirect()->back();
+    }
+
+    public function delete_entry($id){
+        $item = Distribution_item::find($id);
+        $item->delete();
+
+        toastr()->success('Distribution Order Item Deleted Succesfully', config('global.system_name'));
+        return redirect()->back();
+    }
+
+    public function set_paid($id){
+        $distribution = Distribution::find($id);
+        return view('admin.distributions.set-paid',compact('distribution'));
+    }
+
+    public function post_set_paid($id){
+        $distribution = Distribution::find($id);
+        $validator = Validator::make(Request::all(), [
+            'date'                          =>  'required',
+            'receipt_number'                =>  'required',
+            'payment_type'                  =>  'required',
+            'amount'                        =>  'required',
+            //'remarks'                       =>  'required',
+        ],
+        [
+            'date.required'                 =>  'Date Required',
+            'receipt_number.required'       =>  'Receipt Number Required',
+            'payment_type.required'         =>  'Please Select Payment Type',
+            'amount.required'               =>  'Amount Required',
+            //'remarks.required'       =>  'Representative Required',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        Distribution_payment::updateOrCreate([
+            'distribution_id'           =>      $distribution->id,
+        ],[
+            'date'                      =>      Request::get('date'),
+            'receipt_number'            =>      Request::get('receipt_number'),
+            'payment_type'              =>      Request::get('payment_type'),
+            'amount'                    =>      Request::get('amount'),
+            'remarks'                   =>      Request::get('remarks'),
+        ]);
+
+        $distribution->update([
+            'isPaid'        =>      1,
+        ]);
+
+        toastr()->success('Payment Updated Succesfully', config('global.system_name'));
+        return redirect()->back();
+    }
+
+    public function print($id){
+        $distribution = Distribution::find($id);
+        return View('admin.pdf.distribution-report',compact('distribution'));
     }
 }

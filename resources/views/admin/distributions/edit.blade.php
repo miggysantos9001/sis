@@ -1,16 +1,16 @@
 @extends('master')
 
 @section('content')
-<h2 class="content-heading">Distribution Order - Create Order</h2>
+<h2 class="content-heading">Distribution Order - Update Order</h2>
 @include('alert')
-<a href="{{ route('distributions.create') }}" class="btn btn-back"><i class="fa fa-home"></i> Back to Build Order Products</a>
+<a href="{{ route('distributions.index') }}" class="btn btn-back"><i class="fa fa-home"></i> Back to Index</a>
 <div style="margin-bottom:20px;"></div>
-{!! Form::open(['method'=>'POST','action'=>'DistributionController@store_customer_order']) !!}
+{!! Form::model($distribution,['method'=>'PATCH','action'=>['DistributionController@update',$distribution->id]]) !!}
 <div class="row">
     <div class="col-md-4">
         <div class="block block-themed">
             <div class="block-header bg-primary">
-                <h3 class="block-title">Create Order</h3>
+                <h3 class="block-title">Update Order</h3>
             </div>
             <div class="block-content">
                 <div class="row">
@@ -58,32 +58,34 @@
                                     <th class="text-center">Lot #</th>
                                     <th class="text-center">Expiry Date</th>
                                     <th class="text-center">Total Price</th>
+                                    <th class="text-center">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @php
                                     $total = 0;
                                 @endphp
-                                @foreach (session('cart') as $products)
+                                @foreach($distribution->distribution_items as $row)
                                 <tr>
-                                    <td class="text-center">{{ $loop->iteration }}
-                                        {!! Form::hidden('purchase_order_item_id[]',$products['purchase_order_item_id']) !!}
-                                        {!! Form::hidden('qty[]',$products['qty']) !!}
+                                    <td class="text-center">{{ $loop->iteration }}</td>
+                                    <td class="text-center">{{ $row->po_item->product->description }}</td>
+                                    <td class="text-center">{{ $row->qty }}</td>
+                                    <td class="text-center">{{ $row->po_item->product->pricing->wsp }}</td>
+                                    <td class="text-center">{{ $row->po_item->lot_number }}</td>
+                                    <td class="text-center">{{ \Carbon\Carbon::parse($row->po_item->expiry_date)->toFormattedDateString() }}</td>
+                                    <td class="text-center">{{ number_format($row->qty * $row->po_item->product->pricing->wsp,2) }}</td>
+                                    <td class="text-center">
+                                        <a href="#edit{{ $row->id }}" data-toggle="modal" class="btn btn-sm btn-primary"><i class="fa fa-edit"></i></a>
+                                        <a href="{{ route('distribution.delete-item',$row->id) }}" class="btn btn-sm btn-danger"><i class="fa fa-trash"></i></a>
                                     </td>
-                                    <td class="text-center">{{ $products['product_name'] }}</td>
-                                    <td class="text-center">{{ $products['qty'] }}</td>
-                                    <td class="text-center">{{ $products['amount'] }}</td>
-                                    <td class="text-center">{{ $products['lot_number'] }}</td>
-                                    <td class="text-center">{{ \Carbon\Carbon::parse($products['expiry_date'])->toFormattedDateString() }}</td>
-                                    <td class="text-center">{{ number_format($products['qty'] * $products['amount'],2) }}</td>
                                     @php
-                                        $total += $products['qty'] * $products['amount'];
+                                        $total += $row->qty * $row->po_item->product->pricing->wsp;
                                     @endphp
                                 </tr>    
                                 @endforeach
                                 <tr>
                                     <td colspan="6" class="text-right">Grand Total</td>
-                                    <td class="text-center"><strong>{{ number_format($total,2) }}</strong></td>
+                                    <td colspan="2" class="text-center"><strong>{{ number_format($total,2) }}</strong></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -100,40 +102,36 @@
 </div>
 {!! Form::close() !!}
 @endsection
-@section('js')
-<script>
-    $.ajaxSetup({
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            }
-    });
-
-    var product_id = $('#combo1').val();
-
-    $('#combo1').change(function() {
-        var combobox3 = $(this).val(); 
-        $.ajax({    //create an ajax request to load_page.php
-            type: 'GET',
-            url: "{{ action('DistributionController@loadproducts') }}",//php file url diri     
-            dataType: "json",    
-            data: { combobox3 : combobox3 },
-            success: function(response){
-                $("#prodtable tbody").html("");
-                $.each(response,function(index,value){
-                    data = '<tr>';
-                    data += '<td align="center"><input type="checkbox" name="products['+index+'][purchase_order_item_id]" value="'+value.id+'" "class"="form-control" style="margin-top:5px;"></td>';
-                    data += '<td>'+value.product.description+'</td>';
-                    data += '<td>'+value.qty+'</td>';
-                    data += '<td>'+value.lot_number+'</td>';
-                    data += '<td>'+value.expiry_date+'</td>';
-                    data += '<td><input type="text" name="products['+index+'][qty]" class="form-control form-control-sm" value="0" style="width:50px;text-align:center;" ></td>';
-                    data += '</tr>';
-                    $("#prodtable tbody").append(data);
-                
-                });
-            }
-        });
-    });
-
-</script>
+@section('modal')
+@foreach($distribution->distribution_items as $row)
+<div class="modal fade" id="edit{{ $row->id }}" tabindex="-1" role="dialog" aria-labelledby="modal-popout" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-popout" role="document">
+        <div class="modal-content">
+            {!! Form::open(['method'=>'POST','action'=>['DistributionController@update_entry',$row->id]]) !!}
+            <div class="block block-themed">
+                <div class="block-header bg-primary">
+                    <h3 class="block-title">Edit Entry</h3>
+                    <div class="block-options">
+                        <button type="button" class="btn-block-option" data-dismiss="modal" aria-label="Close">
+                            <i class="si si-close"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="block-content">
+                    <div class="form-group">
+                        {!! Form::label('Quantity') !!}
+                        {!! Form::text('qty',$row->qty,['class'=>'form-control']) !!}
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fa fa-save"></i> Update
+                </button>
+            </div>
+            {!! Form::close() !!}
+        </div>
+    </div>
+</div>
+@endforeach
 @endsection

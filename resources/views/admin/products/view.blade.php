@@ -17,16 +17,16 @@
                         <table class="table table-bordered">
                             <tbody>
                                 <tr>
-                                    <td>{{ __('msg.Barcode Number') }}:</td>
-                                    <td style="font-weight: bold;">{{ $product->barcode }}</td>
-                                </tr>
-                                <tr>
                                     <td>{{ __('msg.Category') }}:</td>
                                     <td style="font-weight: bold;">{{ $product->category->name }}</td>
                                 </tr>
                                 <tr>
                                     <td>{{ __('msg.Description') }}:</td>
                                     <td style="font-weight: bold;">{{ $product->description }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Quantity:</td>
+                                    <td style="font-weight: bold;">{{ $product->qty }}</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -36,9 +36,10 @@
                             <thead>
                                 <tr>
                                     <th class="text-center">{{ __('msg.Branch') }}</th>
-                                    <th class="text-center">{{ __('msg.Store Price') }}</th>
-                                    <th class="text-center">{{ __('msg.SRP') }}</th>
-                                    <th class="text-center">{{ __('msg.Wholesale Price') }}</th>
+                                    <th class="text-center">Cost</th>
+                                    <th class="text-center">Distribution Price</th>
+                                    <th class="text-center">Retail Price / Box</th>
+                                    <th class="text-center">Retail Price / Piece</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -53,26 +54,13 @@
                                 <tr style="font-weight:bold;">
                                     <td>{{ $b->name }}</td>
                                     <td class="text-right">{{ ($pricing != NULL) ? number_format($pricing->stp,2) : '-' }}</td>
-                                    <td class="text-right">{{ ($pricing != NULL) ? number_format($pricing->srp,2) : '-' }}</td>
                                     <td class="text-right">{{ ($pricing != NULL) ? number_format($pricing->wsp,2) : '-' }}</td>
+                                    <td class="text-right">{{ ($pricing != NULL) ? number_format($pricing->srp,2) : '-' }}</td>
+                                    <td class="text-right">{{ ($pricing != NULL) ? number_format($pricing->srpp,2) : '-' }}</td>
                                 </tr>
                                 @endforeach
                             </tbody>
                         </table>
-                        <p>{{ __('msg.Product Images') }}</p>
-                        <table class="table table-bordered">
-                            <tbody>
-                                @foreach($product->images as $pimages)
-                                <tr>
-                                    <td class="text-center">
-                                        <img class="" src="<?php echo asset('public/images/'.$pimages->name) ?>" alt="" height="200" width="200">
-                                        <a href="{{ action('ProductController@delete_product_image',$pimages->id) }}" class="btn btn-danger"><i class="fa fa-trash"></i></a>
-                                    </td>
-                                </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                        
                     </div>
                 </div>
             </div>
@@ -104,20 +92,26 @@
                         </div>
                         <div class="col-md-12">
                             <div class="form-group">
-                                <label>{{ __('msg.Store Price') }}</label>
+                                <label>Cost</label>
                                 {!! Form::text('stp','0.00',['class'=>'form-control']) !!}
                             </div>
                         </div>
                         <div class="col-md-12">
                             <div class="form-group">
-                                <label>{{ __('msg.SRP') }}</label>
+                                <label>Distribution Price</label>
+                                {!! Form::text('wsp','0.00',['class'=>'form-control']) !!}
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label>Retail Price / Box</label>
                                 {!! Form::text('srp','0.00',['class'=>'form-control']) !!}
                             </div>
                         </div>
                         <div class="col-md-12">
                             <div class="form-group">
-                                <label>{{ __('msg.Wholesale Price') }}</label>
-                                {!! Form::text('wsp','0.00',['class'=>'form-control']) !!}
+                                <label>Retail Price / Piece</label>
+                                {!! Form::text('srpp','0.00',['class'=>'form-control']) !!}
                             </div>
                         </div>
                     </div>

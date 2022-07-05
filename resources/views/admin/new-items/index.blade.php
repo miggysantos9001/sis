@@ -1,9 +1,9 @@
 @extends('master')
 
 @section('content')
-<h2 class="content-heading">{{ __('msg.New Item Module') }}</h2>
+<h2 class="content-heading">Purchase Order</h2>
 @include('alert')
-<a href="#addBranch" class="btn btn-primary" data-toggle="modal"><i class="fa fa-plus"></i> {{ __('msg.Create Entry') }}</a>
+<a href="{{ route('new-items.create') }}" class="btn btn-primary"><i class="fa fa-plus"></i> {{ __('msg.Create Entry') }}</a>
 <div style="margin-bottom:20px;"></div>
 <div class="row">
     <div class="col-md-12">

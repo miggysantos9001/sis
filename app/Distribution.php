@@ -11,4 +11,12 @@ class Distribution extends Model
     public function customer(){
         return $this->belongsTo('App\Customer','customer_id','id');
     }
+
+    public function payment(){
+        return $this->hasOne('App\Distribution_payment','distribution_id','id');
+    }
+
+    public function distribution_items(){
+        return $this->hasMany('App\Distribution_item', 'distribution_id', 'id');
+    }
 }
