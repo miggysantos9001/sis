@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Consumed_product;
 use App\Customer;
 use App\Distribution;
 use App\Distribution_item;
 use App\Distribution_payment;
 use App\Product;
+use App\Purchase_order;
 use App\Purchase_order_item;
+use App\Purchase_order_item_total;
 use Excel;
 use Validator;
 use Auth;
@@ -37,12 +40,12 @@ class DistributionController extends Controller
 
     public function loadproducts(){
         $id = Request::get('combobox3');
-        $prod = Purchase_order_item::with('product','product.pricing')->where('product_id',$id)->orderBy('date')->get();    
+        $prod = Purchase_order_item::with(['product','product.pricing'])->where('product_id',$id)->where('isConsumed',0)->orderBy('date')->get();    
         return $prod;
     }
 
     public function create(){
-        //return Session::get('cart');
+        //return Session::forget('cart');
         $customers = Customer::orderBy('company_name')->get()->pluck('company_name','id');
         $products = Product::orderBy('description')->get()->pluck('description','id');
         return view('admin.distributions.create',compact('customers','products'));
@@ -68,7 +71,7 @@ class DistributionController extends Controller
         }
             
         Session::put('cart', $cart);
-        toastr()->success('Branch Created Successfully', config('global.system_name'));
+        toastr()->success('Product Added to Cart Successfully', config('global.system_name'));
         return redirect()->back();
     }
 
@@ -116,11 +119,31 @@ class DistributionController extends Controller
                 'purchase_order_item_id'    =>          $value,
                 'qty'                       =>          Request::get('qty')[$key],
             ]);
+
+            Consumed_product::create([
+                'purchase_order_item_id'    =>          $value,
+                'consumed_qty'              =>          Request::get('qty')[$key],
+            ]);
+
+            $checkqty = Purchase_order_item::where('id',$value)->first();
+
+            Purchase_order_item::where('id',$value)->update([
+                'qty'                       =>      $checkqty->qty - Request::get('qty')[$key],
+            ]);
+
+            $getSum = Consumed_product::where('purchase_order_item_id',$value)->sum('consumed_qty');
+            $getOrig = Purchase_order_item_total::where('purchase_order_item_id',$value)->sum('original_qty');
+            if($getSum == $getOrig){
+                $checkqty->update([
+                    'isConsumed'        =>      1,
+                ]);
+            }
         }
 
         toastr()->success('Distribution Order Created Succesfully', config('global.system_name'));
-        return redirect()->route('distributions.index');
         Session::forget('cart');
+        return redirect()->route('distributions.index');
+        
     }
 
     public function edit($id){

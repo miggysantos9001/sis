@@ -125,7 +125,7 @@
     });
 
     var product_id = $('#combo1').val();
-
+    
     $('#combo1').change(function() {
         var combobox3 = $(this).val(); 
         $.ajax({    //create an ajax request to load_page.php

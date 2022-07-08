@@ -8,6 +8,7 @@ use App\Supplier;
 use App\New_item;
 use App\Purchase_order;
 use App\Purchase_order_item;
+use App\Purchase_order_item_total;
 use Excel;
 use Validator;
 use Auth;
@@ -106,7 +107,7 @@ class NewItemController extends Controller
         ])->id;
         
         foreach(Request::get('product_id') as $key => $value){
-            Purchase_order_item::create([
+            $poi = Purchase_order_item::create([
                 'purchase_order_id'     =>      $po_id,
                 'date'                  =>      Request::get('date'),
                 'product_id'            =>      $value,
@@ -114,6 +115,11 @@ class NewItemController extends Controller
                 'lot_number'            =>      Request::get('lot_number')[$key],
                 'expiry_date'           =>      Request::get('expiry_date')[$key],
                 'qty'                   =>      Request::get('qty')[$key],
+            ])->id;
+
+            Purchase_order_item_total::create([
+                'purchase_order_item_id'        =>      $poi,
+                'original_qty'                  =>      Request::get('qty')[$key],
             ]);
         }
 

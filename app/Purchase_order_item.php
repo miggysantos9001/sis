@@ -19,4 +19,8 @@ class Purchase_order_item extends Model
     public function uom(){
         return $this->belongsTo('App\Unit','uom_id','id');
     }
+
+    public function consumed(){
+        return $this->hasMany('App\Consumed_product', 'purchase_order_item_id', 'id');
+    }
 }
