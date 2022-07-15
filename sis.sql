@@ -20,12 +20,13 @@ CREATE TABLE IF NOT EXISTS `branches` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Dumping data for table sis.branches: ~0 rows (approximately)
 /*!40000 ALTER TABLE `branches` DISABLE KEYS */;
 INSERT INTO `branches` (`id`, `name`, `cname`, `created_at`, `updated_at`) VALUES
-	(1, 'BMD Main', '吉德', '2021-09-15 09:39:46', '2021-10-18 17:33:38');
+	(1, 'Cabaguio Branch', NULL, '2021-09-15 09:39:46', '2022-07-11 09:39:46'),
+	(2, 'Damosa Branch', NULL, '2022-07-11 09:39:58', '2022-07-11 09:39:58');
 /*!40000 ALTER TABLE `branches` ENABLE KEYS */;
 
 -- Dumping structure for table sis.cashiers
@@ -73,10 +74,12 @@ CREATE TABLE IF NOT EXISTS `consumed_products` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Dumping data for table sis.consumed_products: ~0 rows (approximately)
 /*!40000 ALTER TABLE `consumed_products` DISABLE KEYS */;
+INSERT INTO `consumed_products` (`id`, `purchase_order_item_id`, `consumed_qty`, `created_at`, `updated_at`) VALUES
+	(1, 1, 50, '2022-07-13 10:37:25', '2022-07-13 10:37:25');
 /*!40000 ALTER TABLE `consumed_products` ENABLE KEYS */;
 
 -- Dumping structure for table sis.customers
@@ -90,12 +93,13 @@ CREATE TABLE IF NOT EXISTS `customers` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Dumping data for table sis.customers: ~0 rows (approximately)
 /*!40000 ALTER TABLE `customers` DISABLE KEYS */;
 INSERT INTO `customers` (`id`, `company_name`, `contact_person`, `address`, `mobile`, `tin_number`, `created_at`, `updated_at`) VALUES
-	(1, 'Sample', 'Sample', 'Sample', '123', '12345511', '2022-06-29 13:15:02', '2022-06-29 13:15:21');
+	(1, 'Sample', 'Sample', 'Sample', '123', '12345511', '2022-06-29 13:15:02', '2022-06-29 13:15:21'),
+	(2, 'wewe', 'wewe', 'wewe', 'wewe', 'wee', '2022-07-13 11:04:29', '2022-07-13 11:04:29');
 /*!40000 ALTER TABLE `customers` ENABLE KEYS */;
 
 -- Dumping structure for table sis.distributions
@@ -110,10 +114,12 @@ CREATE TABLE IF NOT EXISTS `distributions` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Dumping data for table sis.distributions: ~0 rows (approximately)
 /*!40000 ALTER TABLE `distributions` DISABLE KEYS */;
+INSERT INTO `distributions` (`id`, `date`, `reference_number`, `customer_id`, `representative`, `terms`, `isPaid`, `created_at`, `updated_at`) VALUES
+	(1, '2022-07-13', '11', 1, 'wewe', 'CASH', 0, '2022-07-13 10:37:25', '2022-07-13 10:37:25');
 /*!40000 ALTER TABLE `distributions` ENABLE KEYS */;
 
 -- Dumping structure for table sis.distribution_items
@@ -123,13 +129,16 @@ CREATE TABLE IF NOT EXISTS `distribution_items` (
   `distribution_id` int(11) NOT NULL,
   `purchase_order_item_id` int(11) NOT NULL,
   `qty` int(11) NOT NULL,
+  `discount` decimal(12,2) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Dumping data for table sis.distribution_items: ~0 rows (approximately)
 /*!40000 ALTER TABLE `distribution_items` DISABLE KEYS */;
+INSERT INTO `distribution_items` (`id`, `date`, `distribution_id`, `purchase_order_item_id`, `qty`, `discount`, `created_at`, `updated_at`) VALUES
+	(1, '2022-07-13', 1, 1, 50, 1000.00, '2022-07-13 10:37:25', '2022-07-13 10:37:25');
 /*!40000 ALTER TABLE `distribution_items` ENABLE KEYS */;
 
 -- Dumping structure for table sis.distribution_payments
@@ -171,9 +180,9 @@ CREATE TABLE IF NOT EXISTS `migrations` (
   `migration` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `batch` int(11) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table sis.migrations: ~17 rows (approximately)
+-- Dumping data for table sis.migrations: ~15 rows (approximately)
 /*!40000 ALTER TABLE `migrations` DISABLE KEYS */;
 INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 	(1, '2014_10_12_000000_create_users_table', 1),
@@ -198,7 +207,9 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 	(20, '2022_07_04_122547_create_distribution_items_table', 17),
 	(21, '2022_07_04_143538_create_distribution_payments_table', 18),
 	(22, '2022_07_08_084938_create_consumed_products_table', 19),
-	(23, '2022_07_08_095842_create_purchase_order_item_totals_table', 20);
+	(23, '2022_07_08_095842_create_purchase_order_item_totals_table', 20),
+	(24, '2022_07_13_080047_create_receive_purchase_orders_table', 21),
+	(25, '2022_07_13_080548_create_receive_po_items_table', 22);
 /*!40000 ALTER TABLE `migrations` ENABLE KEYS */;
 
 -- Dumping structure for table sis.new_items
@@ -779,7 +790,7 @@ CREATE TABLE IF NOT EXISTS `product_pricings` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=513 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=514 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Dumping data for table sis.product_pricings: ~512 rows (approximately)
 /*!40000 ALTER TABLE `product_pricings` DISABLE KEYS */;
@@ -1295,7 +1306,8 @@ INSERT INTO `product_pricings` (`id`, `product_id`, `branch_id`, `stp`, `wsp`, `
 	(509, 509, 1, 62.00, 71.30, 95.00, 0.00, NULL, NULL),
 	(510, 510, 1, 96.00, 110.40, 125.00, 0.00, NULL, NULL),
 	(511, 511, 1, 96.00, 110.40, 125.00, 0.00, NULL, NULL),
-	(512, 512, 1, 32.00, 36.80, 50.00, 0.00, NULL, NULL);
+	(512, 512, 1, 32.00, 36.80, 50.00, 0.00, NULL, NULL),
+	(513, 495, 2, 41.15, 43.62, 55.00, 0.00, '2022-07-11 09:43:23', '2022-07-11 09:43:23');
 /*!40000 ALTER TABLE `product_pricings` ENABLE KEYS */;
 
 -- Dumping structure for table sis.purchase_orders
@@ -1308,10 +1320,12 @@ CREATE TABLE IF NOT EXISTS `purchase_orders` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Dumping data for table sis.purchase_orders: ~0 rows (approximately)
 /*!40000 ALTER TABLE `purchase_orders` DISABLE KEYS */;
+INSERT INTO `purchase_orders` (`id`, `date`, `po_number`, `branch_id`, `supplier_id`, `created_at`, `updated_at`) VALUES
+	(1, '2022-07-12', '1', 1, 3, '2022-07-12 10:53:37', '2022-07-12 10:53:37');
 /*!40000 ALTER TABLE `purchase_orders` ENABLE KEYS */;
 
 -- Dumping structure for table sis.purchase_order_items
@@ -1321,17 +1335,23 @@ CREATE TABLE IF NOT EXISTS `purchase_order_items` (
   `purchase_order_id` int(11) NOT NULL,
   `product_id` int(11) NOT NULL,
   `uom_id` int(11) NOT NULL,
-  `lot_number` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `lot_number` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `qty` int(11) NOT NULL,
-  `expiry_date` date NOT NULL,
+  `expiry_date` date DEFAULT NULL,
   `isConsumed` tinyint(4) NOT NULL DEFAULT '0',
+  `cost` decimal(12,2) NOT NULL DEFAULT '0.00',
+  `discount` decimal(12,2) NOT NULL DEFAULT '0.00',
+  `dt` tinyint(4) NOT NULL DEFAULT '0',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table sis.purchase_order_items: ~0 rows (approximately)
+-- Dumping data for table sis.purchase_order_items: ~2 rows (approximately)
 /*!40000 ALTER TABLE `purchase_order_items` DISABLE KEYS */;
+INSERT INTO `purchase_order_items` (`id`, `date`, `purchase_order_id`, `product_id`, `uom_id`, `lot_number`, `qty`, `expiry_date`, `isConsumed`, `cost`, `discount`, `dt`, `created_at`, `updated_at`) VALUES
+	(1, '2022-07-12', 1, 176, 1, '11', 0, '2022-07-13', 1, 500.00, 25.00, 2, '2022-07-12 10:53:37', '2022-07-13 10:37:25'),
+	(2, '2022-07-12', 1, 423, 1, '22', 50, '2022-07-13', 0, 300.00, 0.00, 0, '2022-07-12 10:53:37', '2022-07-13 08:51:26');
 /*!40000 ALTER TABLE `purchase_order_items` ENABLE KEYS */;
 
 -- Dumping structure for table sis.purchase_order_item_totals
@@ -1342,11 +1362,51 @@ CREATE TABLE IF NOT EXISTS `purchase_order_item_totals` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table sis.purchase_order_item_totals: ~0 rows (approximately)
+-- Dumping data for table sis.purchase_order_item_totals: ~2 rows (approximately)
 /*!40000 ALTER TABLE `purchase_order_item_totals` DISABLE KEYS */;
+INSERT INTO `purchase_order_item_totals` (`id`, `purchase_order_item_id`, `original_qty`, `created_at`, `updated_at`) VALUES
+	(1, 1, 50, '2022-07-12 10:53:37', '2022-07-12 10:53:37'),
+	(2, 2, 20, '2022-07-12 10:53:37', '2022-07-12 10:53:37');
 /*!40000 ALTER TABLE `purchase_order_item_totals` ENABLE KEYS */;
+
+-- Dumping structure for table sis.receive_po_items
+CREATE TABLE IF NOT EXISTS `receive_po_items` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `date` date NOT NULL,
+  `rr_id` int(11) NOT NULL DEFAULT '0',
+  `purchase_order_item_id` int(11) NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Dumping data for table sis.receive_po_items: ~2 rows (approximately)
+/*!40000 ALTER TABLE `receive_po_items` DISABLE KEYS */;
+INSERT INTO `receive_po_items` (`id`, `date`, `rr_id`, `purchase_order_item_id`, `created_at`, `updated_at`) VALUES
+	(1, '2022-07-13', 1, 1, '2022-07-13 08:36:22', '2022-07-13 08:36:22'),
+	(2, '2022-07-13', 1, 2, '2022-07-13 08:36:22', '2022-07-13 08:36:22');
+/*!40000 ALTER TABLE `receive_po_items` ENABLE KEYS */;
+
+-- Dumping structure for table sis.receive_purchase_orders
+CREATE TABLE IF NOT EXISTS `receive_purchase_orders` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `purchase_order_id` int(11) NOT NULL,
+  `received_date` date NOT NULL,
+  `reference_number` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `received_by` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `isComplete` tinyint(4) NOT NULL DEFAULT '0',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Dumping data for table sis.receive_purchase_orders: ~0 rows (approximately)
+/*!40000 ALTER TABLE `receive_purchase_orders` DISABLE KEYS */;
+INSERT INTO `receive_purchase_orders` (`id`, `purchase_order_id`, `received_date`, `reference_number`, `received_by`, `isComplete`, `created_at`, `updated_at`) VALUES
+	(1, 1, '2022-07-13', '11', 'wewe', 1, '2022-07-13 08:36:22', '2022-07-13 08:36:22');
+/*!40000 ALTER TABLE `receive_purchase_orders` ENABLE KEYS */;
 
 -- Dumping structure for table sis.sales
 CREATE TABLE IF NOT EXISTS `sales` (
@@ -1489,14 +1549,15 @@ CREATE TABLE IF NOT EXISTS `suppliers` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Dumping data for table sis.suppliers: ~3 rows (approximately)
 /*!40000 ALTER TABLE `suppliers` DISABLE KEYS */;
 INSERT INTO `suppliers` (`id`, `name`, `cname`, `address`, `contact`, `created_at`, `updated_at`) VALUES
 	(1, 'Reta Drug Distribution', '供應商 1', 'Davao City', '09099999999', '2021-09-18 09:58:04', '2022-05-14 11:33:31'),
 	(2, 'MeedPharma', NULL, 'Davao City', '0909', '2021-09-27 15:35:52', '2022-05-14 11:33:40'),
-	(3, 'Bambang Pharma', NULL, 'Davao City', '+639456588439', '2022-05-14 11:34:13', '2022-05-14 11:34:13');
+	(3, 'Bambang Pharma', NULL, 'Davao City', '+639456588439', '2022-05-14 11:34:13', '2022-05-14 11:34:13'),
+	(4, 'Five Jewels', NULL, 'Davao City', '1', '2022-07-11 09:45:14', '2022-07-11 09:45:14');
 /*!40000 ALTER TABLE `suppliers` ENABLE KEYS */;
 
 -- Dumping structure for table sis.systemsettings
@@ -1525,14 +1586,15 @@ CREATE TABLE IF NOT EXISTS `units` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Dumping data for table sis.units: ~3 rows (approximately)
 /*!40000 ALTER TABLE `units` DISABLE KEYS */;
 INSERT INTO `units` (`id`, `name`, `created_at`, `updated_at`) VALUES
 	(1, 'box', '2022-05-14 19:40:51', '2022-05-14 19:40:51'),
 	(2, 'bottle', NULL, NULL),
-	(3, 'jar', NULL, NULL);
+	(3, 'jar', NULL, NULL),
+	(4, 'Piece', '2022-07-11 09:41:34', '2022-07-11 09:41:34');
 /*!40000 ALTER TABLE `units` ENABLE KEYS */;
 
 -- Dumping structure for table sis.users
