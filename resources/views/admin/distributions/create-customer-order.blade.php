@@ -57,7 +57,10 @@
                                     <th class="text-center">Price</th>
                                     <th class="text-center">Lot #</th>
                                     <th class="text-center">Expiry Date</th>
+                                    <th class="text-center">Discount</th>
                                     <th class="text-center">Total Price</th>
+                                    <th class="text-center">Final Price</th>
+                                    <th class="text-center">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -69,20 +72,26 @@
                                     <td class="text-center">{{ $loop->iteration }}
                                         {!! Form::hidden('purchase_order_item_id[]',$products['purchase_order_item_id']) !!}
                                         {!! Form::hidden('qty[]',$products['qty']) !!}
+                                        {!! Form::hidden('discount[]',$products['discount']) !!}
                                     </td>
                                     <td class="text-center">{{ $products['product_name'] }}</td>
                                     <td class="text-center">{{ $products['qty'] }}</td>
                                     <td class="text-center">{{ $products['amount'] }}</td>
                                     <td class="text-center">{{ $products['lot_number'] }}</td>
                                     <td class="text-center">{{ \Carbon\Carbon::parse($products['expiry_date'])->toFormattedDateString() }}</td>
+                                    <td class="text-center">{{ number_format($products['discount'],2) }}</td>
                                     <td class="text-center">{{ number_format($products['qty'] * $products['amount'],2) }}</td>
+                                    <td class="text-center">{{ number_format(($products['qty'] * $products['amount'] - $products['discount']),2) }}</td>
+                                    <td class="text-center">
+                                        <a href="#discount{{ $products['purchase_order_item_id'] }}" data-toggle="modal" class="btn btn-sm btn-primary"><i class="fa fa-plus"></i></a>
+                                    </td>
                                     @php
-                                        $total += $products['qty'] * $products['amount'];
+                                        $total += ($products['qty'] * $products['amount'] - $products['discount']);
                                     @endphp
                                 </tr>    
                                 @endforeach
                                 <tr>
-                                    <td colspan="6" class="text-right">Grand Total</td>
+                                    <td colspan="8" class="text-right">Grand Total</td>
                                     <td class="text-center"><strong>{{ number_format($total,2) }}</strong></td>
                                 </tr>
                             </tbody>
@@ -99,6 +108,40 @@
     </div>
 </div>
 {!! Form::close() !!}
+@endsection
+@section('modal')
+@foreach (session('cart') as $products)
+<div class="modal fade" id="discount{{ $products['purchase_order_item_id'] }}" tabindex="-1" role="dialog" aria-labelledby="modal-popout" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-popout" role="document">
+        <div class="modal-content">
+            {!! Form::open(['method'=>'POST','action'=>['DistributionController@addtoDiscount',$products['purchase_order_item_id']]]) !!}
+            <div class="block block-themed">
+                <div class="block-header bg-primary">
+                    <h3 class="block-title">Add Discount</h3>
+                    <div class="block-options">
+                        <button type="button" class="btn-block-option" data-dismiss="modal" aria-label="Close">
+                            <i class="si si-close"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="block-content">
+                    <div class="form-group">
+                        <label>Discount Price</label>
+                        {!! Form::text('price','0.00',['class'=>'form-control']) !!}
+                        {!! Form::text('purchase_order_item_id',$products['purchase_order_item_id'],['class'=>'form-control']) !!}
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fa fa-save"></i> {{ __('msg.Update Entry') }}
+                </button>
+            </div>
+            {!! Form::close() !!}
+        </div>
+    </div>
+</div>
+@endforeach
 @endsection
 @section('js')
 <script>

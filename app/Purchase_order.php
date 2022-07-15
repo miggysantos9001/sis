@@ -19,4 +19,8 @@ class Purchase_order extends Model
     public function po_items(){
         return $this->hasMany('App\Purchase_order_item', 'purchase_order_id', 'id');
     }
+
+    public function rr(){
+        return $this->hasOne('App\Receive_purchase_order', 'purchase_order_id', 'id');
+    }
 }

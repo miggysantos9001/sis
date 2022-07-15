@@ -40,7 +40,7 @@ class DistributionController extends Controller
 
     public function loadproducts(){
         $id = Request::get('combobox3');
-        $prod = Purchase_order_item::with(['product','product.pricing'])->where('product_id',$id)->where('isConsumed',0)->orderBy('date')->get();    
+        $prod = Purchase_order_item::with(['product','product.pricing','product.unit'])->where('product_id',$id)->where('isConsumed',0)->orderBy('date')->get();    
         return $prod;
     }
 
@@ -66,12 +66,26 @@ class DistributionController extends Controller
                     "po_qty"                    =>  $product->qty,
                     "qty"                       =>  $value['qty'],
                     "amount"                    =>  $product->product->pricing->wsp,
+                    "discount"                  =>  '0.00',
                 ];
             }
         }
             
         Session::put('cart', $cart);
         toastr()->success('Product Added to Cart Successfully', config('global.system_name'));
+        return redirect()->back();
+    }
+
+    public function addtoDiscount($id){
+        $cart = Session::get('cart');
+        foreach($cart as &$c){
+            //dd($c);
+            if($c['purchase_order_item_id'] == $id){
+                $c['discount'] = Request::get('price');
+            }
+        }
+        Session::put('cart', $cart);
+        toastr()->success('Discount Added Successfully', config('global.system_name'));
         return redirect()->back();
     }
 
@@ -111,13 +125,14 @@ class DistributionController extends Controller
                 ->withInput();
         }
 
-        $distribution_id = Distribution::create(Request::except('purchase_order_item_id','qty'))->id;
+        $distribution_id = Distribution::create(Request::except('purchase_order_item_id','qty','discount'))->id;
         foreach(Request::get('purchase_order_item_id') as $key => $value){
             Distribution_item::create([
                 'date'                      =>          Request::get('date'),
                 'distribution_id'           =>          $distribution_id,
                 'purchase_order_item_id'    =>          $value,
                 'qty'                       =>          Request::get('qty')[$key],
+                'discount'                  =>          Request::get('discount')[$key],
             ]);
 
             Consumed_product::create([
@@ -173,6 +188,7 @@ class DistributionController extends Controller
         $item = Distribution_item::find($id);
         $item->update([
             'qty'       =>      Request::get('qty'),
+            'discount'       =>      Request::get('discount'),
         ]);
 
         toastr()->success('Distribution Order Item Updated Succesfully', config('global.system_name'));

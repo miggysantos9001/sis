@@ -19,7 +19,8 @@
                             <th class="text-center">PO #</th>
                             <th class="text-center">{{ __('msg.Branch Name') }}</th>
                             <th class="text-center">{{ __('msg.Supplier Name') }}</th>
-                            <th class="text-center" width="50">{{ __('msg.Action') }}</th>
+                            <th class="text-center">Status</th>
+                            <th class="text-center" width="180">{{ __('msg.Action') }}</th>
                         </tr>
                     </thead>
                 </table>
@@ -41,6 +42,7 @@
             {data: 'po_number', name: 'po_number'},
             {data: 'branch_id', name: 'branch_id'},
             {data: 'supplier_id', name: 'supplier_id'},
+            {data: 'isComplete', name: 'isComplete'},
             {data: 'action', name: 'action', orderable: false, searchable: false},
         ]
     });

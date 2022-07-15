@@ -121,7 +121,9 @@
                                     <th class="text-center">Price</th>
                                     <th class="text-center">Lot #</th>
                                     <th class="text-center">Expiry Date</th>
+                                    <th class="text-center">Discount</th>
                                     <th class="text-center">Total Price</th>
+                                    <th class="text-center">Final Price</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -136,14 +138,16 @@
                                     <td class="text-center">{{ $row->po_item->product->pricing->wsp }}</td>
                                     <td class="text-center">{{ $row->po_item->lot_number }}</td>
                                     <td class="text-center">{{ \Carbon\Carbon::parse($row->po_item->expiry_date)->toFormattedDateString() }}</td>
-                                    <td class="text-center">{{ number_format($row->qty * $row->po_item->product->pricing->wsp,2) }}</td>
+                                    <td class="text-center">{{ number_format($row->discount,2) }}</td>
+                                    <td class="text-center">{{ number_format(($row->qty * $row->po_item->product->pricing->wsp),2) }}</td>
+                                    <td class="text-center">{{ number_format(($row->qty * $row->po_item->product->pricing->wsp) - $row->discount,2) }}</td>
                                     @php
-                                        $total += $row->qty * $row->po_item->product->pricing->wsp;
+                                        $total += ($row->qty * $row->po_item->product->pricing->wsp) - $row->discount;
                                     @endphp
                                 </tr>    
                                 @endforeach
                                 <tr>
-                                    <td colspan="6" class="text-right">Grand Total</td>
+                                    <td colspan="8" class="text-right">Grand Total</td>
                                     <td class="text-center"><strong>{{ number_format($total,2) }}</strong></td>
                                 </tr>
                             </tbody>

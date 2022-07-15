@@ -79,13 +79,15 @@ class ProductController extends Controller
     public function create(){
         $categories = Category::orderBy('name')->get()->pluck('CategoryName','id');
         $branches = \App\Branch::orderBy('name')->get()->pluck('BranchName','id');
-        return view('admin.products.create',compact('categories','branches'));
+        $units = \App\Unit::orderBy('name')->get()->pluck('name','id');
+        return view('admin.products.create',compact('categories','branches','units'));
     }
 
     public function store(){
         $validator = Validator::make(Request::all(), [
             'category_id'                   =>  'required',
             'branch_id'                     =>  'required',
+            'uom_id'                        =>  'required',
             'description'                   =>  'required|unique:products',
             'stp'                           =>  'required|numeric',
             'srp'                           =>  'required|numeric',
@@ -95,6 +97,7 @@ class ProductController extends Controller
         [
             'category_id.required'          =>  'Please Select Category',
             'branch_id.required'            =>  'Please Select Branch',
+            'uom_id.required'               =>  'Please Select Unit of Measure',
             'description.required'          =>  'Description Required',
             'stp.required'                  =>  'Cost Required',
             'wsp.required'                  =>  'Distribution Price Required',
@@ -127,7 +130,8 @@ class ProductController extends Controller
     public function edit($id){
         $product = Product::find($id);
         $categories = Category::orderBy('name')->get()->pluck('CategoryName','id');
-        return view('admin.products.edit',compact('categories','product'));
+        $units = \App\Unit::orderBy('name')->get()->pluck('name','id');
+        return view('admin.products.edit',compact('categories','product','units'));
     }
 
     public function update($id){
@@ -135,10 +139,12 @@ class ProductController extends Controller
         $validator = Validator::make(Request::all(), [
             'category_id'                   =>  'required',
             'qty'                           =>  'required',
+            'uom_id'                        =>  'required',
             'description'                   =>  "required|unique:products,description,$product->id,id",
         ],
         [
             'category_id.required'          =>  'Please Select Category',
+            'uom_id.required'               =>  'Please Select Unit of Measure',
             'qty.required'                  =>  'Quantity Required',
             'description.required'          =>  'Description Required',
         ]);

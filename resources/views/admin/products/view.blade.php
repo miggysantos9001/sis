@@ -25,6 +25,10 @@
                                     <td style="font-weight: bold;">{{ $product->description }}</td>
                                 </tr>
                                 <tr>
+                                    <td>Unit of Measure</td>
+                                    <td style="font-weight: bold;">{{ $product->unit->name }}</td>
+                                </tr>
+                                <tr>
                                     <td>Quantity:</td>
                                     <td style="font-weight: bold;">{{ $product->qty }}</td>
                                 </tr>

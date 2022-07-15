@@ -57,7 +57,9 @@
                                     <th class="text-center">Price</th>
                                     <th class="text-center">Lot #</th>
                                     <th class="text-center">Expiry Date</th>
+                                    <th class="text-center">Discount</th>
                                     <th class="text-center">Total Price</th>
+                                    <th class="text-center">Final Price</th>
                                     <th class="text-center">Action</th>
                                 </tr>
                             </thead>
@@ -73,18 +75,20 @@
                                     <td class="text-center">{{ $row->po_item->product->pricing->wsp }}</td>
                                     <td class="text-center">{{ $row->po_item->lot_number }}</td>
                                     <td class="text-center">{{ \Carbon\Carbon::parse($row->po_item->expiry_date)->toFormattedDateString() }}</td>
+                                    <td class="text-center">{{ number_format($row->discount,2) }}</td>
                                     <td class="text-center">{{ number_format($row->qty * $row->po_item->product->pricing->wsp,2) }}</td>
+                                    <td class="text-center">{{ number_format(($row->qty * $row->po_item->product->pricing->wsp) - $row->discount,2) }}</td>
                                     <td class="text-center">
                                         <a href="#edit{{ $row->id }}" data-toggle="modal" class="btn btn-sm btn-primary"><i class="fa fa-edit"></i></a>
                                         <a href="{{ route('distribution.delete-item',$row->id) }}" class="btn btn-sm btn-danger"><i class="fa fa-trash"></i></a>
                                     </td>
                                     @php
-                                        $total += $row->qty * $row->po_item->product->pricing->wsp;
+                                        $total += ($row->qty * $row->po_item->product->pricing->wsp)- $row->discount;
                                     @endphp
                                 </tr>    
                                 @endforeach
                                 <tr>
-                                    <td colspan="6" class="text-right">Grand Total</td>
+                                    <td colspan="8" class="text-right">Grand Total</td>
                                     <td colspan="2" class="text-center"><strong>{{ number_format($total,2) }}</strong></td>
                                 </tr>
                             </tbody>
@@ -121,6 +125,10 @@
                     <div class="form-group">
                         {!! Form::label('Quantity') !!}
                         {!! Form::text('qty',$row->qty,['class'=>'form-control']) !!}
+                    </div>
+                    <div class="form-group">
+                        {!! Form::label('Discount') !!}
+                        {!! Form::text('discount',$row->discount,['class'=>'form-control']) !!}
                     </div>
                 </div>
             </div>

@@ -4,6 +4,7 @@
 <h2 class="content-heading">Distribution Order</h2>
 @include('alert')
 <a href="{{ route('distributions.create') }}" class="btn btn-primary"><i class="fa fa-plus"></i> {{ __('msg.Create Entry') }}</a>
+<a href="#add" class="btn btn-info" data-toggle="modal"><i class="fa fa-user"></i> Create New Customer</a>
 <div style="margin-bottom:20px;"></div>
 <div class="row">
     <div class="col-md-12">
@@ -45,7 +46,7 @@
                                     $total += $row->qty * $row->po_item->product->pricing->wsp;
                                 @endphp
                                 @endforeach
-                                {{ number_format($total,2) }}
+                                {{ number_format($total - $data->distribution_item->discount,2) }}
                             </td>
                             <td class="text-center">
                                 <div class="btn-group" role="group">
@@ -70,6 +71,50 @@
     </div>
 </div>
 @endsection
-@section('js')
-
+@section('modal')
+<div class="modal fade" id="add" tabindex="-1" role="dialog" aria-labelledby="modal-popout" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-popout" role="document">
+        <div class="modal-content">
+            {!! Form::open(['method'=>'POST','action'=>'CustomerController@store']) !!}
+            <div class="block block-themed">
+                <div class="block-header bg-primary">
+                    <h3 class="block-title">New Customer</h3>
+                    <div class="block-options">
+                        <button type="button" class="btn-block-option" data-dismiss="modal" aria-label="Close">
+                            <i class="si si-close"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="block-content">
+                    <div class="form-group">
+                        <label>Company Name</label>
+                        {!! Form::text('company_name',null,['class'=>'form-control']) !!}
+                    </div>
+                    <div class="form-group">
+                        <label>Contact Person</label>
+                        {!! Form::text('contact_person',null,['class'=>'form-control']) !!}
+                    </div>
+                    <div class="form-group">
+                        <label>Address</label>
+                        {!! Form::text('address',null,['class'=>'form-control']) !!}
+                    </div>
+                    <div class="form-group">
+                        <label>Mobile</label>
+                        {!! Form::text('mobile',null,['class'=>'form-control']) !!}
+                    </div>
+                    <div class="form-group">
+                        <label>TIN #</label>
+                        {!! Form::text('tin_number',null,['class'=>'form-control']) !!}
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fa fa-save"></i> Update
+                </button>
+            </div>
+            {!! Form::close() !!}
+        </div>
+    </div>
+</div>
 @endsection

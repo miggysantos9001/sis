@@ -152,7 +152,7 @@
                         <span class="title">bmdpharma@gmail.com</span>
                     </span>
                 </div>
-                <div class="title">Distribution Order Report</div>
+                <div class="title">Purchase Order Report</div>
             </div>
             <div class="row">
                 <div class="col-md-12">
@@ -160,51 +160,19 @@
                         <tbody>
                             <tr>
                                 <td>Date</td>
-                                <td><span style="margin-left: 10px;">{{ \Carbon\Carbon::parse($distribution->date)->toFormattedDateString() }}</span></td>
+                                <td><span style="margin-left: 10px;">{{ \Carbon\Carbon::parse($po->date)->toFormattedDateString() }}</span></td>
                             </tr>
                             <tr>
-                                <td>Customer</td>
-                                <td><span style="margin-left: 10px;">{{ $distribution->customer->company_name }}</span></td>
+                                <td>PO #</td>
+                                <td><span style="margin-left: 10px;">{{ $po->po_number }}</span></td>
                             </tr>
                             <tr>
-                                <td>Reference #</td>
-                                <td><span style="margin-left: 10px;">{{ $distribution->reference_number }}</span></td>
+                                <td>Branch</td>
+                                <td><span style="margin-left: 10px;">{{ $po->branch->name }}</span></td>
                             </tr>
                             <tr>
-                                <td>TIN #</td>
-                                <td><span style="margin-left: 10px;">{{ $distribution->customer->tin_number }}</span></td>
-                            </tr>
-                            
-                            <tr>
-                                <td>Address</td>
-                                <td><span style="margin-left: 10px;">{{ $distribution->customer->address }}</span></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            <div class="row" style="margin-top: 10px;">
-                <div class="col-md-12">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th class="text-center">PO #</th>
-                                <th class="text-center">PAYMENT TERMS</th>
-                                <th class="text-center">REPRESENTATIVE</th>
-                                <th class="text-center">TOTAL AMOUNT</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td class="text-center">{{ $distribution->reference_number }}</td>
-                                <td class="text-center">{{ $distribution->terms }}</td>
-                                <td class="text-center">{{ $distribution->representative }}</td>
-                                @foreach($distribution->distribution_items as $row)
-                                @php
-                                    $total += $row->qty * $row->po_item->product->pricing->wsp;
-                                @endphp
-                                @endforeach
-                                <td class="text-center">{{ number_format($total,2) }}</td>
+                                <td>Supplier</td>
+                                <td><span style="margin-left: 10px;">{{ $po->supplier->name }}</span></td>
                             </tr>
                         </tbody>
                     </table>
@@ -216,41 +184,60 @@
                         <thead>
                             <tr>
                                 <th class="text-center">#</th>
-                                <th class="text-center">QTY</th>
-                                <th class="text-center">UNIT</th>
-                                <th class="text-center">DESCRIPTION</th>
-                                <th class="text-center">LOT #</th>
-                                <th class="text-center">EXPIRY DATE</th>
-                                <th class="text-center">UNIT PRICE</th>
-                                <th class="text-center">AMOUNT</th>
-                                <th class="text-center">DISCOUNT</th>
-                                <th class="text-center">AMOUNT DUE</th>
+                                <th class="text-center">Product</th>
+                                <th class="text-center">UOM</th>
+                                <th class="text-center">Qty</th>
+                                <th class="text-center">Cost</th>
+                                <th class="text-center">Discount</th>
+                                <th class="text-center">Total Cost</th>
+                                <th class="text-center">Total Discount</th>
+                                <th class="text-center">Total Amount</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @php
-                                $total2 = 0;
-                            @endphp
-                            @foreach($distribution->distribution_items as $row)
+                            @foreach($po->po_items as $row)
                             <tr class="text-center">
                                 <td>{{ $loop->iteration }}</td>
+                                <td>{{ $row->product->description }}</td>
+                                <td>{{ $row->uom->name }}</td>
                                 <td>{{ $row->qty }}</td>
-                                <td>{{ $row->po_item->product->unit->name }}</td>
-                                <td>{{ $row->po_item->product->description }}</td>
-                                <td>{{ $row->po_item->lot_number }}</td>
-                                <td>{{ \Carbon\Carbon::parse($row->expiry_date)->toFormattedDateString() }}</td>
-                                <td>{{ number_format($row->po_item->product->pricing->wsp,2) }}</td>
-                                <td>{{ number_format($row->po_item->product->pricing->wsp * $row->qty,2) }}</td>
+                                <td>{{ number_format($row->cost,2) }}</td>
                                 <td>{{ number_format($row->discount,2) }}</td>
-                                <td>{{ number_format(($row->po_item->product->pricing->wsp * $row->qty) - $row->discount,2) }}</td>
-                                @php
-                                    $total2 += ($row->po_item->product->pricing->wsp * $row->qty) - $row->discount;
-                                @endphp
+                                <td>
+                                    {{ number_format($row->cost * $row->qty,2) }}
+                                </td>
+                                <td>
+                                    @if($row->dt == 0)
+                                    0.00
+                                    @elseif($row->dt == 1)
+                                    {{ number_format($row->discount,2) }}
+                                    @else
+                                    {{ number_format($row->discount * $row->qty,2) }}
+                                    @endif
+                                </td>
+                                <td>
+                                    @if($row->dt == 0)
+                                    {{ number_format($row->cost * $row->qty,2) }}
+                                    @php
+                                        $total +=$row->cost * $row->qty;
+                                    @endphp
+                                    @elseif($row->dt == 1)
+                                    {{ number_format(($row->cost * $row->qty) - $row->discount,2) }}
+                                    @php
+                                        $total +=($row->cost * $row->qty) - $row->discount;
+                                    @endphp
+                                    @else
+                                    {{ number_format(($row->cost * $row->qty) - ($row->discount * $row->qty),2) }}
+                                    @php
+                                        $total +=($row->cost * $row->qty) - ($row->discount * $row->qty);
+                                    @endphp
+                                    @endif
+                                </td>
                             </tr>
                             @endforeach
                             <tr>
-                                <td colspan="9" class="text-right">GRAND TOTAL</td>
-                                <td class="text-center">{{ number_format($total2,2) }}</td>
+                                <td colspan="8" class="text-right">Grand Total</td>
+                                <td class="text-center">{{ number_format($total,2) }}</td>
                             </tr>
                         </tbody>
                     </table>

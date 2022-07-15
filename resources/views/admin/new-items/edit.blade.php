@@ -17,29 +17,70 @@
                     <thead>
                         <tr>
                             <th class="text-center">#</th>
-                            <th class="text-center">Qty</th>
                             <th class="text-center">Product</th>
                             <th class="text-center">UOM</th>
-                            <th class="text-center">Lot #</th>
-                            <th class="text-center">Expiry Date</th>
+                            <th class="text-center">Qty</th>
+                            <th class="text-center">Cost</th>
+                            <th class="text-center">Discount</th>
+                            <th class="text-center">Total Cost</th>
+                            <th class="text-center">Total Discount</th>
+                            <th class="text-center">Total Amount</th>
                             <th class="text-center" width="120">Action</th>
                         </tr>
                     </thead>
                     <tbody>
+                        @php
+                            $total = 0;
+                        @endphp
                         @foreach($po->po_items as $row)
-                        <tr>
+                        <tr class="text-center">
                             <td>{{ $loop->iteration }}</td>
-                            <td>{{ $row->qty }}</td>
                             <td>{{ $row->product->description }}</td>
                             <td>{{ $row->uom->name }}</td>
-                            <td>{{ $row->lot_number }}</td>
-                            <td>{{ \Carbon\Carbon::parse($row->expiry_date)->toFormattedDateString() }}</td>
+                            <td>{{ $row->qty }}</td>
+                            <td>{{ number_format($row->cost,2) }}</td>
+                            <td>{{ number_format($row->discount,2) }}</td>
+                            <td>
+                                {{ number_format($row->cost * $row->qty,2) }}
+                            </td>
+                            <td>
+                                @if($row->dt == 0)
+                                0.00
+                                @elseif($row->dt == 1)
+                                {{ number_format($row->discount,2) }}
+                                @else
+                                {{ number_format($row->discount * $row->qty,2) }}
+                                @endif
+                            </td>
+                            <td>
+                                @if($row->dt == 0)
+                                {{ number_format($row->cost * $row->qty,2) }}
+                                @php
+                                    $total +=$row->cost * $row->qty;
+                                @endphp
+                                @elseif($row->dt == 1)
+                                {{ number_format(($row->cost * $row->qty) - $row->discount,2) }}
+                                @php
+                                    $total +=($row->cost * $row->qty) - $row->discount;
+                                @endphp
+                                @else
+                                {{ number_format(($row->cost * $row->qty) - ($row->discount * $row->qty),2) }}
+                                @php
+                                    $total +=($row->cost * $row->qty) - ($row->discount * $row->qty);
+                                @endphp
+                                @endif
+                            </td>
                             <td class="text-center">
                                 <a href="#edit{{ $row->id }}" data-toggle="modal" class="btn btn-primary btn-sm"><i class="fa fa-edit"></i></a>
                                 <a href="{{ route('new-item.delete-item',$row->id) }}" class="btn btn-danger btn-sm"><i class="fa fa-trash"></i></a>
                             </td>
                         </tr>
                         @endforeach
+                        <tr>
+                            <td colspan="8" class="text-right">Grand Total</td>
+                            <td class="text-center">{{ number_format($total,2) }}</td>
+                            <td></td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -94,26 +135,32 @@
                                 </div>
                                 <div class="col-md-2">
                                     <div class="form-group">
-                                        {!! Form::label('','Unit of Measure') !!}
+                                        {!! Form::label('','UoM') !!}
                                         {!! Form::select('uom_id[]',$units,null,['class'=>'form-control js-select2','placeholder'=>'-- Select One --']) !!}
-                                    </div>
-                                </div>
-                                <div class="col-md-2">
-                                    <div class="form-group">
-                                        {!! Form::label('','Lot #') !!}
-                                        {!! Form::text('lot_number[]',null,['class'=>'form-control']) !!}
-                                    </div>
-                                </div>
-                                <div class="col-md-2">
-                                    <div class="form-group">
-                                        {!! Form::label('','Exp Date') !!}
-                                        {!! Form::date('expiry_date[]',null,['class'=>'form-control']) !!}
                                     </div>
                                 </div>
                                 <div class="col-md-1">
                                     <div class="form-group">
-                                        {!! Form::label('','Quantity') !!}
+                                        {!! Form::label('','Cost') !!}
+                                        {!! Form::text('cost[]','0.00',['class'=>'form-control']) !!}
+                                    </div>
+                                </div>
+                                <div class="col-md-1">
+                                    <div class="form-group">
+                                        {!! Form::label('','Discount') !!}
+                                        {!! Form::text('discount[]','0.00',['class'=>'form-control']) !!}
+                                    </div>
+                                </div>
+                                <div class="col-md-1">
+                                    <div class="form-group">
+                                        {!! Form::label('','Qty') !!}
                                         {!! Form::text('qty[]',null,['class'=>'form-control']) !!}
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="form-group">
+                                        {!! Form::label('','Discount Type') !!}
+                                        {!! Form::select('dt[]',['0'=>'NONE','1'=>'AS A WHOLE','2'=>'PER ITEM'],0,['class'=>'form-control js-select2','placeholder'=>'-- Select One --']) !!}
                                     </div>
                                 </div>
                                 <div class="col-md-1">
@@ -164,12 +211,16 @@
                             {!! Form::select('uom_id',$units,$row->uom_id,['class'=>'form-control js-select2','placeholder'=>'-- Select One --','style'=>'width:100%;']) !!}
                         </div>
                         <div class="form-group">
-                            {!! Form::label('','Lot #') !!}
-                            {!! Form::text('lot_number',$row->lot_number,['class'=>'form-control']) !!}
+                            {!! Form::label('','Cost') !!}
+                            {!! Form::text('cost',$row->cost,['class'=>'form-control']) !!}
                         </div>
                         <div class="form-group">
-                            {!! Form::label('','Exp Date') !!}
-                            {!! Form::date('expiry_date',$row->expiry_date,['class'=>'form-control']) !!}
+                            {!! Form::label('','Discount') !!}
+                            {!! Form::text('discount',$row->discount,['class'=>'form-control']) !!}
+                        </div>
+                        <div class="form-group">
+                            {!! Form::label('','Discount Type') !!}
+                            {!! Form::select('dt',['0'=>'NONE','1'=>'AS A WHOLE','2'=>'PER ITEM'],$row->dt,['class'=>'form-control js-select2','placeholder'=>'-- Select One --','style'=>'width:100%;']) !!}
                         </div>
                         <div class="form-group">
                             {!! Form::label('','Qty') !!}
@@ -206,17 +257,21 @@
             data += '{!! Form::select("uom_id[]",$units,null,["class"=>"form-control js-select2","placeholder"=>"-- Select One --"]) !!}';
             data += '</div></div>';
             
-            data += '<div class="col-md-2"><div class="form-group">';
-            data += '<input type="text" name="lot_number[]" class="form-control" />';
+            data += '<div class="col-md-1"><div class="form-group">';
+            data += '<input type="text" name="cost[]" class="form-control" value="0.00"/>';
             data += '</div></div>';
 
-            data += '<div class="col-md-2"><div class="form-group">';
-            data += '<input type="date" name="expiry_date[]" class="form-control" />';
+            data += '<div class="col-md-1"><div class="form-group">';
+            data += '<input type="text" name="discount[]" class="form-control" value="0.00"/>';
             data += '</div></div>';
 
             data += '<div class="col-md-1"><div class="form-group">';
             data += '<input type="text" name="qty[]" class="form-control" />';
-            data += '</div></div>';           
+            data += '</div></div>';
+
+            data += '<div class="col-md-2"><div class="form-group">';
+            data += '{!! Form::select("dt[]",["0"=>"NONE","1"=>"AS A WHOLE","2"=>"PER ITEM"],0,["class"=>"form-control js-select2","placeholder"=>"-- Select One --"]) !!}';
+            data += '</div></div>';          
 
             data += '<div class="col-md-1"><div class="form-group">';
             data += '<button type="button" class="btn btn btn-danger btn-xs minus" style="margin-top:2px;"><i class="fa fa-trash" aria-hidden="true"></i></button>';

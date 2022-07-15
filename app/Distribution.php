@@ -16,6 +16,10 @@ class Distribution extends Model
         return $this->hasOne('App\Distribution_payment','distribution_id','id');
     }
 
+    public function distribution_item(){
+        return $this->hasOne('App\Distribution_item','distribution_id','id');
+    }
+
     public function distribution_items(){
         return $this->hasMany('App\Distribution_item', 'distribution_id', 'id');
     }

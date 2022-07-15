@@ -29,6 +29,10 @@
                             {!! Form::text('description',null,['class'=>'form-control']) !!}
                         </div>
                         <div class="form-group">
+                            <label>UoM</label>
+                            {!! Form::select('uom_id',$units,null,['class'=>'form-control js-select2','placeholder'=>'PLEASE SELECT']) !!}
+                        </div>
+                        <div class="form-group">
                             <label>Quantity</label>
                             {!! Form::text('qty',null,['class'=>'form-control']) !!}
                         </div>

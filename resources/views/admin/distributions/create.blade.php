@@ -3,7 +3,7 @@
 @section('content')
 <h2 class="content-heading">Distribution Order - Create Order</h2>
 @include('alert')
-<a href="{{ route('new-items.index') }}" class="btn btn-back"><i class="fa fa-home"></i> {{ __('msg.Back to Main') }}</a>
+<a href="{{ route('distributions.index') }}" class="btn btn-back"><i class="fa fa-home"></i> {{ __('msg.Back to Main') }}</a>
 <a href="#view" data-toggle="modal" class="btn btn-success"><i class="fa fa-shopping-cart"></i> View Cart</a>
 <div style="margin-bottom:20px;"></div>
 {!! Form::open(['method'=>'POST','action'=>'DistributionController@addtoCart']) !!}
@@ -29,6 +29,7 @@
                                 <tr>
                                     <th class="text-center" width="50"><i class="fa fa-check"></i></th>
                                     <th class="text-center">Product</th>
+                                    <th class="text-center">UoM</th>
                                     <th class="text-center">Qty</th>
                                     <th class="text-center">Lot #</th>
                                     <th class="text-center">Expiry Date</th>
@@ -79,11 +80,13 @@
                                     <tr>
                                         <th class="text-center">#</th>
                                         <th class="text-center">Product</th>
+                                        <th class="text-center">UoM</th>
                                         <th class="text-center">Quantity</th>
                                         <th class="text-center">Price</th>
                                         <th class="text-center">Lot #</th>
                                         <th class="text-center">Expiry Date</th>
                                         <th class="text-center">Total Price</th>
+                                        <th class="text-center">Discount</th>
                                         <th class="text-center" width="50px;">Action</th>
                                     </tr>
                                 </thead>
@@ -92,11 +95,13 @@
                                     <tr>
                                         <td class="text-center">{{ $loop->iteration }}</td>
                                         <td class="text-center">{{ $products['product_name'] }}</td>
+                                        <td class="text-center">{{ $products['uom_id'] }}</td>
                                         <td class="text-center">{{ $products['qty'] }}</td>
                                         <td class="text-center">{{ $products['amount'] }}</td>
                                         <td class="text-center">{{ $products['lot_number'] }}</td>
                                         <td class="text-center">{{ \Carbon\Carbon::parse($products['expiry_date'])->toFormattedDateString() }}</td>
                                         <td class="text-center">{{ number_format($products['qty'] * $products['amount'],2) }}</td>
+                                        <td class="text-center">{{ number_format($products['discount'],2) }}</td>
                                         <td class="text-center">
                                             <a href="{{ route('distribution.remove-to-cart',$products['purchase_order_item_id']) }}" class="btn btn-sm btn-danger"><i class="fa fa-trash"></i></a>
                                         </td>
@@ -139,6 +144,7 @@
                     data = '<tr>';
                     data += '<td align="center"><input type="checkbox" name="products['+index+'][purchase_order_item_id]" value="'+value.id+'" "class"="form-control" style="margin-top:5px;"></td>';
                     data += '<td>'+value.product.description+'</td>';
+                    data += '<td>'+value.product.unit.name+'</td>';
                     data += '<td>'+value.qty+'</td>';
                     data += '<td>'+value.lot_number+'</td>';
                     data += '<td>'+value.expiry_date+'</td>';

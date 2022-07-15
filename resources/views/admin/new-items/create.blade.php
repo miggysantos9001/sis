@@ -54,26 +54,32 @@
                                 </div>
                                 <div class="col-md-2">
                                     <div class="form-group">
-                                        {!! Form::label('','Unit of Measure') !!}
+                                        {!! Form::label('','UoM') !!}
                                         {!! Form::select('uom_id[]',$units,null,['class'=>'form-control js-select2','placeholder'=>'-- Select One --']) !!}
-                                    </div>
-                                </div>
-                                <div class="col-md-2">
-                                    <div class="form-group">
-                                        {!! Form::label('','Lot #') !!}
-                                        {!! Form::text('lot_number[]',null,['class'=>'form-control']) !!}
-                                    </div>
-                                </div>
-                                <div class="col-md-2">
-                                    <div class="form-group">
-                                        {!! Form::label('','Exp Date') !!}
-                                        {!! Form::date('expiry_date[]',null,['class'=>'form-control']) !!}
                                     </div>
                                 </div>
                                 <div class="col-md-1">
                                     <div class="form-group">
-                                        {!! Form::label('','Quantity') !!}
+                                        {!! Form::label('','Cost') !!}
+                                        {!! Form::text('cost[]','0.00',['class'=>'form-control']) !!}
+                                    </div>
+                                </div>
+                                <div class="col-md-1">
+                                    <div class="form-group">
+                                        {!! Form::label('','Discount') !!}
+                                        {!! Form::text('discount[]','0.00',['class'=>'form-control']) !!}
+                                    </div>
+                                </div>
+                                <div class="col-md-1">
+                                    <div class="form-group">
+                                        {!! Form::label('','Qty') !!}
                                         {!! Form::text('qty[]',null,['class'=>'form-control']) !!}
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="form-group">
+                                        {!! Form::label('','Discount Type') !!}
+                                        {!! Form::select('dt[]',['0'=>'NONE','1'=>'AS A WHOLE','2'=>'PER ITEM'],0,['class'=>'form-control js-select2','placeholder'=>'-- Select One --']) !!}
                                     </div>
                                 </div>
                                 <div class="col-md-1">
@@ -115,17 +121,21 @@
             data += '{!! Form::select("uom_id[]",$units,null,["class"=>"form-control js-select2","placeholder"=>"-- Select One --"]) !!}';
             data += '</div></div>';
             
-            data += '<div class="col-md-2"><div class="form-group">';
-            data += '<input type="text" name="lot_number[]" class="form-control" />';
+            data += '<div class="col-md-1"><div class="form-group">';
+            data += '<input type="text" name="cost[]" class="form-control" value="0.00"/>';
             data += '</div></div>';
 
-            data += '<div class="col-md-2"><div class="form-group">';
-            data += '<input type="date" name="expiry_date[]" class="form-control" />';
+            data += '<div class="col-md-1"><div class="form-group">';
+            data += '<input type="text" name="discount[]" class="form-control" value="0.00"/>';
             data += '</div></div>';
 
             data += '<div class="col-md-1"><div class="form-group">';
             data += '<input type="text" name="qty[]" class="form-control" />';
-            data += '</div></div>';           
+            data += '</div></div>';
+
+            data += '<div class="col-md-2"><div class="form-group">';
+            data += '{!! Form::select("dt[]",["0"=>"NONE","1"=>"AS A WHOLE","2"=>"PER ITEM"],0,["class"=>"form-control js-select2","placeholder"=>"-- Select One --"]) !!}';
+            data += '</div></div>';          
 
             data += '<div class="col-md-1"><div class="form-group">';
             data += '<button type="button" class="btn btn btn-danger btn-xs minus" style="margin-top:2px;"><i class="fa fa-trash" aria-hidden="true"></i></button>';

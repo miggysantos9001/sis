@@ -40,7 +40,12 @@ Route::post('/product/new-price/{id}','ProductController@new_price');
 Route::resource('/products','ProductController');
 
 Route::get('/new-item/delete-item/{id}','NewItemController@delete_item')->name('new-item.delete-item');
+Route::get('/new-item/receive-entry/{id}','NewItemController@receive_entry')->name('new-item.receive');
+Route::get('/new-item/print-entry/{id}','NewItemController@print_entry')->name('new-item.print');
+
 Route::post('/new-item/update-item/{id}','NewItemController@update_item');
+Route::post('/new-item/receive-entry/{id}','NewItemController@post_receive_entry');
+
 Route::resource('/new-items','NewItemController');
 Route::get('/new-items/delete/{id}','NewItemController@delete')->name('new-items.delete');
 
@@ -79,6 +84,7 @@ Route::post('/distribution/add-to-cart/','DistributionController@addtoCart')->na
 Route::post('/distribution/create-customer-order','DistributionController@store_customer_order');
 Route::post('/distribution/update-entry/{id}','DistributionController@update_entry');
 Route::post('/distribution/set-paid/{id}','DistributionController@post_set_paid');
+Route::post('/distribution/add-to-discount/{id}','DistributionController@addtoDiscount');
 
 Route::resource('/distributions','DistributionController');
 
